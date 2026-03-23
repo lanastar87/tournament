@@ -38,24 +38,51 @@
         <!-- Header -->
         <div class="bg-indigo-600 p-6 text-white text-center">
             <h1 class="text-3xl font-bold">🏆 토너먼트 메이커</h1>
-            <p class="opacity-80 mt-2">이름을 입력하고 대진표를 만드세요</p>
+            <p class="opacity-80 mt-2">이름을 확인하고 대진표를 만드세요</p>
         </div>
 
         <!-- Step 1: Input Names -->
         <div id="setup-view" class="p-8">
             <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">참가자 명단 (한 줄에 한 명씩 입력)</label>
+                <div class="flex justify-between items-end mb-2">
+                    <label class="text-sm font-semibold text-gray-700">참가자 명단 (한 줄에 한 명씩)</label>
+                    <span id="count-display" class="text-xs text-indigo-500 font-bold">24명 입력됨</span>
+                </div>
                 <textarea 
                     id="names-input" 
-                    class="w-full h-48 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    class="w-full h-64 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium text-gray-600"
                     placeholder="홍길동&#10;김철수&#10;이영희..."
-                ></textarea>
+                    oninput="updateCount()"
+                >민준
+규범
+지안
+두오
+수민
+아인
+지후
+해리
+다혜
+경태
+서윤
+채윤
+예림
+연아
+민서
+건우
+성빈
+도연
+하율
+유정
+상윤
+서준
+하린
+시우</textarea>
             </div>
             <button 
                 onclick="startTournament()"
                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-colors shadow-lg active:transform active:scale-[0.98]"
             >
-                대진표 생성하기
+                이 명단으로 대진표 생성하기
             </button>
         </div>
 
@@ -92,6 +119,15 @@
         let currentRoundMatches = [];
         let roundNumber = 1;
 
+        // 명단 숫자 업데이트
+        function updateCount() {
+            const input = document.getElementById('names-input').value;
+            const names = input.split('\n')
+                .map(name => name.trim())
+                .filter(name => name !== '');
+            document.getElementById('count-display').innerText = `${names.length}명 입력됨`;
+        }
+
         // 배열을 무작위로 섞는 유틸리티 함수
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -112,7 +148,6 @@
                 return;
             }
 
-            // 시작할 때 선수 명단 섞기
             currentPlayers = shuffle([...names]);
             roundNumber = 1;
             
@@ -125,7 +160,6 @@
         function setupRound() {
             currentRoundMatches = [];
             
-            // 현재 플레이어 명단으로 대진 구성
             for (let i = 0; i < currentPlayers.length; i += 2) {
                 if (i + 1 < currentPlayers.length) {
                     currentRoundMatches.push({ 
@@ -135,7 +169,6 @@
                         isBye: false
                     });
                 } else {
-                    // 부전승 처리
                     currentRoundMatches.push({ 
                         p1: currentPlayers[i], 
                         p2: null, 
@@ -146,6 +179,7 @@
             }
 
             renderMatches();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function renderMatches() {
@@ -222,7 +256,6 @@
             if (winners.length === 1) {
                 showWinner(winners[0]);
             } else {
-                // 핵심 수정: 다음 라운드 진출자들을 다시 섞어서 부전승 독점을 방지
                 currentPlayers = shuffle([...winners]);
                 roundNumber++;
                 setupRound();
@@ -242,6 +275,7 @@
             document.getElementById('setup-view').classList.remove('hidden');
             document.getElementById('tournament-view').classList.add('hidden');
             document.getElementById('winner-view').classList.add('hidden');
+            updateCount();
         }
     </script>
 </body>
